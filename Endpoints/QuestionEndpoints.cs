@@ -15,10 +15,11 @@ public static class QuestionEndpoints
         })
         .WithName("GetAllQuestions");
 
-        group.MapGet("/{examid}", async Task<Results<Ok<Question>, NotFound>> (int examid, ApiDbContext db) =>
+        group.MapGet("/{examid}/{questionid}", 
+                async Task<Results<Ok<Question>, NotFound>> (int examid,int questionid, ApiDbContext db) =>
         {
             return await db.Questions.AsNoTracking()
-                .FirstOrDefaultAsync(model => model.ExamId == examid)
+                .FirstOrDefaultAsync(model => model.ExamId == examid&&model.Id==questionid)
                 is Question model
                     ? TypedResults.Ok(model)
                     : TypedResults.NotFound();
