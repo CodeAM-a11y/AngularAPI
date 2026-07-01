@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AngularAPI.Models;
+﻿namespace AngularAPI.Models;
 
 public partial class Question
 {

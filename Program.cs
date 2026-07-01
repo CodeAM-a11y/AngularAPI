@@ -4,6 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // Die URL Ihres Angular-Frontends
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -13,6 +23,7 @@ var connStr = config.GetConnectionString("db");
 builder.Services.AddDbContext<ApiDbContext>(opts => opts.UseSqlite(connStr));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
+app.UseCors("AllowAngular");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

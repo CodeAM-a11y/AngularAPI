@@ -10,15 +10,19 @@ public static class QuestionEndpoints
         var group = routes.MapGroup("/api/Question");
 
         group.MapGet("/", async (ApiDbContext db) =>
-        {
-            return await db.Questions.ToListAsync();
-        })
+            {
+                var allQuestions =
+                    db.Questions.Where(item => item.ExamId == 2 || item.ExamId == 7);
+                //Änderung eventuell rückgängig machen
+                
+                return await allQuestions.ToListAsync();
+            })
         .WithName("GetAllQuestions");
 
         group.MapGet("/{examid}/{questionid}", 
-                async Task<Results<Ok<Question>, NotFound>> (int examid,int questionid, ApiDbContext db) =>
+                async Task<Results<Ok<Question>,Ok<List<Question>>, NotFound>> (int examid, int questionid, ApiDbContext db) =>
         {
-            return await db.Questions.AsNoTracking()
+                return await db.Questions.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.ExamId == examid&&model.Id==questionid)
                 is Question model
                     ? TypedResults.Ok(model)

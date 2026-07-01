@@ -25,6 +25,16 @@ public static class AnswerEndpoints
                     : TypedResults.NotFound();
         })
         .WithName("GetAnswerById");
+        
+        //Alle Antworten senden die auf ExamId und QuestionId zutreffen.
+        group.MapGet("/{examid}/{questionid}", 
+                async Task<List<Answer>> (int examid,int questionid, ApiDbContext db) =>
+                {
+                    var AnswersForQuestion = 
+                        db.Answers.Where(item => item.ExamId == examid && item.QuestionId == questionid);
+                    return await AnswersForQuestion.ToListAsync();
+                })
+            .WithName("getAnswersForQuestion");
 
         group.MapPut("/{examid}", async Task<Results<Ok, NotFound>> (int examid, Answer answer, ApiDbContext db) =>
         {
