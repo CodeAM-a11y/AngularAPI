@@ -18,6 +18,31 @@ public static class QuestionEndpoints
                 return await allQuestions.ToListAsync();
             })
         .WithName("GetAllQuestions");
+        group.MapGet("/GetQuestionsAnswers", async (ApiDbContext db) =>
+            {
+                var allQuestions = await db.Questions
+                    .Where(item => item.ExamId == 2 || item.ExamId == 7)
+                    .Select(q => new Question
+                    {
+                        ExamId = q.ExamId,
+                        Id = q.Id,
+                        Type = q.Type,
+                        QuestionText = q.QuestionText,
+                        Hint = q.Hint,
+                        Answers = q.Answers.Select(a => new Answer
+                        {
+                            ExamId = a.ExamId,
+                            QuestionId = a.QuestionId,
+                            Id = a.Id,
+                            AnswerText = a.AnswerText,
+                            IsCorrect = a.IsCorrect
+                        }).ToList()
+                    })
+                    .ToListAsync();
+                
+                return allQuestions;
+            })
+            .WithName("GetQuestionsAnswers");
 
         group.MapGet("/{examid}/{questionid}", 
                 async Task<Results<Ok<Question>,Ok<List<Question>>, NotFound>> (int examid, int questionid, ApiDbContext db) =>
